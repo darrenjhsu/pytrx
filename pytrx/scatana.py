@@ -319,7 +319,7 @@ class Solute:
 
 
 
-    def ds(self, q, pars=None, printing=False):
+    def ds(self, q, pars=None, printing=False, es_DWF=0):
         '''
         Originally just 'signal' but changed to 'ds' as this is calculating difference signal
         '''
@@ -333,7 +333,7 @@ class Solute:
         if printing: print(f'ES parameters: {pars_es}, GS parameters: {pars_gs}')
 
         if (self.mol_es is not None) and (self.mol_gs is not None):
-            return self.mol_es.s(q, pars_es) - self.mol_gs.s(q, pars_gs)
+            return self.mol_es.s(q, pars_es, es_DWF) - self.mol_gs.s(q, pars_gs, es_DWF)
         elif self.mol_gs is not None:
             return - self.mol_gs.s(q, pars_gs)
         elif self.mol_es is not None:

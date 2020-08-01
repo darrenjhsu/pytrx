@@ -101,12 +101,12 @@ class Molecule:
         if return_xyz:
             return self.xyz
 
-    def s(self, q, pars=None):
+    def s(self, q, pars=None, DWF=0):
         if not hasattr(self, '_atomic_formfactors'):
             self._atomic_formfactors = formFactor(q, self.Z)
         self.transform(pars)
         # TODO: compute form-factors and store them in Molecule and pass them to Debye
-        return Debye(q, self, f=self._atomic_formfactors)
+        return Debye(q, self, f=self._atomic_formfactors, DWF=DWF)
 
         # return Debye(q, self)
 
@@ -229,7 +229,7 @@ def formFactor(q, Elements):
     return f
 
 
-def Debye(q, mol, f=None, atomOnly=False, debug=False):
+def Debye(q, mol, f=None, atomOnly=False, debug=False, DWF=0):
     if f is None:
         f = formFactor(q, mol.Z)
     if debug:
@@ -293,7 +293,7 @@ def Debye(q, mol, f=None, atomOnly=False, debug=False):
     # Trial 4 use numba - 52 ms for Scoh_calc and 17 ms for Scoh_calc2
     FFtable = np.zeros((natoms, len(q)))
     for idx in range(natoms):
-        FFtable[idx] = f[mol.Z[idx]]
+        FFtable[idx] = f[mol.Z[idx]]  * np.exp(-DWF*q)
     if atomOnly:
         for idx1 in range(natoms):
             Scoh += f[mol.Z[idx1]] ** 2
